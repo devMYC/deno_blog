@@ -332,7 +332,13 @@ export async function handler(
             : []
         )),
       ],
-      scripts: IS_DEV ? [{ src: "/hmr.js" }] : undefined,
+      scripts: [
+        {
+          id: "MathJax-script",
+          src: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js",
+          async: true
+        },
+      ].concat(IS_DEV ? [{ src: "/hmr.js" }] : []),
       body: <PostPage post={post} state={blogState} />,
     });
   }
