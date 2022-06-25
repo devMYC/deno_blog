@@ -14,7 +14,7 @@ export {
 } from "https://deno.land/std@0.140.0/http/mod.ts";
 
 // export * as gfm from "https://deno.land/x/gfm@0.1.20/mod.ts";
-export * as gfm from "https://raw.githubusercontent.com/devMYC/deno-gfm/main/mod.ts";
+export * as gfm from "https://raw.githubusercontent.com/devMYC/deno-gfm/collap-section/mod.ts";
 export {
   Fragment,
   h,
