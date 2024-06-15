@@ -320,8 +320,8 @@ export async function handler(
       ],
       scripts: [],
       body: (
-        <div class="max-w-screen-sm px-6 pt-8 mx-auto">
-          <div class="mt-8 markdown-body" dangerouslySetInnerHTML={{ __html: gfm.render(`# Hello world`) }} />,
+        <div class="max-w-screen-lg px-6 pt-8 mx-auto">
+          <div class="mt-8 markdown-body" dangerouslySetInnerHTML={{ __html: gfm.render(`# Hello world`) }} />
         </div>
       ),
     });
