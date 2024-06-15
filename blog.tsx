@@ -317,7 +317,7 @@ export async function handler(
       ],
       scripts: [
       ],
-      body: <div>{gfm.render(`# Hello`)}</div>,
+      body: <div dangerouslySetInnerHTML={{ __html: gfm.render(`# Hello`) }} />,
     });
   }
 
