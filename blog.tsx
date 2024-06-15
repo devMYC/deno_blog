@@ -308,6 +308,10 @@ export async function handler(
   }
 
   if (pathname === '/cv') {
+    const resp = await fetch('https://drive.usercontent.google.com/download?id=' + Deno.env.get('CV_FILE_ID'));
+    if (!resp.ok) {
+      return new Response("Failed to get content, please try again later.", { status: 500 });
+    }
     return html({
       lang: blogState.lang,
       title: "CV",
@@ -321,7 +325,7 @@ export async function handler(
       scripts: [],
       body: (
         <div class="max-w-screen-lg px-6 pt-8 mx-auto">
-          <div class="mt-8 markdown-body" dangerouslySetInnerHTML={{ __html: gfm.render(`# Hello world`) }} />
+          <div class="mt-8 markdown-body" dangerouslySetInnerHTML={{ __html: gfm.render(await resp.text()) }} />
         </div>
       ),
     });
