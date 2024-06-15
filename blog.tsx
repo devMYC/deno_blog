@@ -314,10 +314,12 @@ export async function handler(
       meta: {},
       styles: [
         gfm.CSS,
+        `.markdown-body { --color-canvas-default: transparent; --color-canvas-subtle: #edf0f2; --color-border-muted: rgba(128,128,128,0.2); } .markdown-body img + p { margin-top: 16px; }`,
+        ...(blogState.style ? [blogState.style] : []),
+        ...blogState.background ? [`body{background:${blogState.background};}`] : [],
       ],
-      scripts: [
-      ],
-      body: <div dangerouslySetInnerHTML={{ __html: gfm.render(`# Hello`) }} />,
+      scripts: [],
+      body: <div class="mt-8 markdown-body" dangerouslySetInnerHTML={{ __html: gfm.render(`# Hello`) }} />,
     });
   }
 
