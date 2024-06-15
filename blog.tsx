@@ -319,7 +319,7 @@ export async function handler(
         ...blogState.background ? [`body{background:${blogState.background};}`] : [],
       ],
       scripts: [],
-      body: <div class="mt-8 markdown-body" dangerouslySetInnerHTML={{ __html: gfm.render(`# Hello`) }} />,
+      body: <div class="mt-8 markdown-body" dangerouslySetInnerHTML={{ __html: gfm.render(`# Hello world`) }} />,
     });
   }
 
