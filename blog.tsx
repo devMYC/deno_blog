@@ -308,7 +308,9 @@ export async function handler(
   }
 
   if (pathname === '/cv') {
-    const resp = await fetch('https://drive.usercontent.google.com/download?id=' + Deno.env.get('CV_FILE_ID'));
+    const fileId = Deno.env.get('CV_FILE_ID');
+    console.info('----> fileId', fileId.length);
+    const resp = await fetch('https://drive.usercontent.google.com/download?id=' + fileId);
     if (!resp.ok) {
       return new Response("Failed to get content, please try again later.", { status: 500 });
     }
