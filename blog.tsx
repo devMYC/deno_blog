@@ -307,6 +307,20 @@ export async function handler(
     });
   }
 
+  if (pathname === '/cv') {
+    return html({
+      lang: blogState.lang,
+      title: "CV",
+      meta: {},
+      styles: [
+        gfm.CSS,
+      ],
+      scripts: [
+      ],
+      body: <div>{gfm.render(`# Hello`)}</div>,
+    });
+  }
+
   const post = POSTS.get(pathname);
   if (post) {
     return html({
