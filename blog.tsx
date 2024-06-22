@@ -40,6 +40,9 @@ const IS_DEV = Deno.args.includes("--dev") && "watchFs" in Deno;
 const POSTS = new Map<string, Post>();
 const HMR_SOCKETS: Set<WebSocket> = new Set();
 
+const CV_FILE_ID = Deno.env.get('CV_FILE_ID');
+let CV: null | string = null;
+
 const HMR_CLIENT = `let socket;
 let reconnectTimer;
 
@@ -251,7 +254,7 @@ export async function handler(
   ctx: BlogContext,
 ) {
   const { state: blogState } = ctx;
-  const { pathname } = new URL(req.url);
+  const { pathname, searchParams } = new URL(req.url);
 
   if (pathname === "/feed") {
     return serveRSS(req, blogState, POSTS);
@@ -308,12 +311,15 @@ export async function handler(
   }
 
   if (pathname === '/cv') {
-    const fileId = Deno.env.get('CV_FILE_ID');
-    console.info('----> fileId', fileId.length);
-    const resp = await fetch('https://drive.usercontent.google.com/download?id=' + fileId);
-    if (!resp.ok) {
-      return new Response("Failed to get content, please try again later.", { status: 500 });
+    console.info('----> fileId', CV_FILE_ID.length, searchParams.get('reload'));
+    if (!CV || searchParams.get('reload') === 'true') {
+        const resp = await fetch('https://drive.usercontent.google.com/download?id=' + CV_FILE_ID);
+        if (!resp.ok) {
+          return new Response("Failed to get content, please try again later.", { status: 500 });
+        }
+        CV = await resp.text();
     }
+
     return html({
       lang: blogState.lang,
       title: "CV",
@@ -327,7 +333,7 @@ export async function handler(
       scripts: [],
       body: (
         <div class="max-w-screen-lg px-6 pt-8 mx-auto">
-          <div class="mt-8 markdown-body" dangerouslySetInnerHTML={{ __html: gfm.render(await resp.text()) }} />
+          <div class="mt-8 markdown-body" dangerouslySetInnerHTML={{ __html: gfm.render(CV) }} />
         </div>
       ),
     });
