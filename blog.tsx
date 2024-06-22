@@ -311,7 +311,6 @@ export async function handler(
   }
 
   if (pathname === '/cv') {
-    console.info('----> fileId', CV_FILE_ID.length, searchParams.get('reload'));
     if (!CV || searchParams.get('reload') === 'true') {
         const resp = await fetch('https://drive.usercontent.google.com/download?id=' + CV_FILE_ID);
         if (!resp.ok) {
