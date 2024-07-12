@@ -40,8 +40,8 @@ const IS_DEV = Deno.args.includes("--dev") && "watchFs" in Deno;
 const POSTS = new Map<string, Post>();
 const HMR_SOCKETS: Set<WebSocket> = new Set();
 
-const CV_FILE_ID = Deno.env.get('CV_FILE_ID');
-let CV: null | string = null;
+const CV_FILE_ID = Deno.env.get("CV_FILE_ID");
+const KV = Deno.env.get('USE_DENO_KV') === "true" ? await Deno.openKv() : null;
 
 const HMR_CLIENT = `let socket;
 let reconnectTimer;
@@ -310,13 +310,25 @@ export async function handler(
     });
   }
 
-  if (pathname === '/cv') {
-    if (!CV || searchParams.get('reload') === 'true') {
-        const resp = await fetch('https://drive.usercontent.google.com/download?id=' + CV_FILE_ID);
-        if (!resp.ok) {
-          return new Response("Failed to get content, please try again later.", { status: 500 });
-        }
-        CV = await resp.text();
+  if (pathname === "/cv") {
+    const key: Readonly<string[]> = ["cv"];
+    let cv: null | string = null;
+
+    if (searchParams.get("reload") !== "true" && KV) {
+      const data = await KV.get<string>(key).catch(err => {
+        console.warn(err);
+        return null;
+      });
+      cv = data && data.value;
+    }
+
+    if (!cv) {
+      const resp = await fetch("https://drive.usercontent.google.com/download?id=" + CV_FILE_ID);
+      if (!resp.ok) {
+        return new Response("Failed to get content, please try again later.", { status: 500 });
+      }
+      cv = await resp.text();
+      KV?.set(key, cv).catch(err => console.warn(err)); // async
     }
 
     return html({
@@ -332,7 +344,7 @@ export async function handler(
       scripts: [],
       body: (
         <div class="max-w-screen-lg px-6 pt-8 mx-auto">
-          <div class="mt-8 markdown-body" dangerouslySetInnerHTML={{ __html: gfm.render(CV) }} />
+          <div class="mt-8 markdown-body" dangerouslySetInnerHTML={{ __html: gfm.render(cv) }} />
         </div>
       ),
     });
@@ -367,9 +379,9 @@ export async function handler(
         {
           id: "MathJax-script",
           src: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js",
-          async: true
         },
-      ].concat(IS_DEV ? [{ src: "/hmr.js" }] : []),
+        ...(IS_DEV ? [{ src: "/hmr.js" }] : []),
+      ],
       body: <PostPage post={post} state={blogState} />,
     });
   }
