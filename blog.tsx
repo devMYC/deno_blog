@@ -315,7 +315,7 @@ export async function handler(
     let cv: null | string = null;
 
     if (searchParams.get("reload") !== "true" && KV) {
-      const data = await KV.get<string>(key).catch(err => {
+      const data = await KV.get<string>(key, { consistency: 'eventual' }).catch(err => {
         console.warn(err);
         return null;
       });
